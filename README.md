@@ -76,6 +76,7 @@
   ```
 ###### Sample Output (Passed to Ansible)
 * You can preview this output using `--list` as an argument to `bb-ec2-inventory`
+  
   ```json
   {
     "dtr_nodes": {
