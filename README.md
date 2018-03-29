@@ -2,6 +2,21 @@
 
 `bb-py` is a collection of cloud utilities to simplify deployment in the cloud.
 
+## Developing `bb-py`
+
+#### Prerequisites
+* python3.6
+* virtualenv
+* [pipenv](https://docs.pipenv.org/)
+
+#### Checkout and Install Dependencies
+1. Clone repository from GitLab and navigate to repository root
+2. Run `pipenv sync` to install dependencies.  This will create a new virtual environment on first run
+
+#### Run
+* **Shell**: `pipenv shell` will spawn a new shell with the virtual environment imported
+* **Setup IDE**: get virtual environment path from `pipenv --venv` and setup IDE using this path
+
 ## Installing `bb-py`
 
 #### Prerequisites
