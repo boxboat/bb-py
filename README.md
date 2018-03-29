@@ -39,7 +39,9 @@
 ## Installed Commands
 
 ### `bb-ec2-auto-tagger`
-# Automatically add -0X suffix to EC2 instance Name tag
+
+##### Summary
+* Automatically add -0X suffix to EC2 instance Name tag
 
 ##### Usage
 * Execute on non AutoScalingGroup instance by providing basename
@@ -62,6 +64,7 @@
 * You can define `asg_groups` or `ec2_groups` or a mixture as shown in the example
 
 ###### Sample Definition
+
   ```yaml
     ---
     ec2_inventory_groups:
@@ -89,9 +92,10 @@
               - ucp_username: boxboat
               - ucp_password: somepass
   ```
+
 ###### Sample Output (Passed to Ansible)
 * You can preview this output using `--list` as an argument to `bb-ec2-inventory`
-  
+
   ```json
   {
     "dtr_nodes": {
@@ -155,6 +159,7 @@
     }
   }
   ```
+
 ##### Usage
   ```
   INVENTORY_FILE=<path>/file.yaml ansible-playbook -i `which bb-ec2-inventory` playbook.yml

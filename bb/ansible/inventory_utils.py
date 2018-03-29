@@ -7,6 +7,8 @@
 
 import logging
 
+from six import iteritems
+
 from bb.utils import file_utils as file_util
 from bb.aws import ec2_utils as ec2
 from bb.aws import asg_utils as asg
@@ -47,7 +49,7 @@ def create_inventory(groups):
             for host in g['hosts']:
                 hostvars = {}
                 for var in g['vars']:
-                    for k, v in var.iteritems():
+                    for k, v in iteritems(var):
                         hostvars[k] = v
                 inv['_meta']['hostvars'][host] = hostvars
     return inv
@@ -81,7 +83,7 @@ def create_inventory_group(name, host_list, vars=[], child_groups=[]):
     return group
 
 
-def create_dynamic_ec2_inventory(definition_file, region):
+def create_dynamic_ec2_inventory(definition_file, region=None):
     """ Create a fully formed ansible ec2 inventory dictionary based on the
     definition file.
 
@@ -130,7 +132,7 @@ def create_dynamic_ec2_inventory(definition_file, region):
             results = ec2.get_ec2_instances(g['name'], region)
             if len(results) > 0:
                 instances = [
-                    v['PrivateIpAddress'] for k, v in results.iteritems()
+                    v['PrivateIpAddress'] for k, v in iteritems(results)
                 ]
                 groups.append(
                     create_inventory_group(
@@ -150,7 +152,7 @@ def create_dynamic_ec2_inventory(definition_file, region):
             )
             if len(results) > 0:
                 instances = [
-                    v['PrivateIpAddress'] for k, v in results.iteritems()
+                    v['PrivateIpAddress'] for k, v in iteritems(results)
                 ]
                 groups.append(
                     create_inventory_group(

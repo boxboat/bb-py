@@ -1,6 +1,11 @@
 import logging
 
-log = logging.getLogger(__name__)
+
+def setup_logging(logger_name, log_level=logging.INFO):
+    format_string = '%(asctime)s %(name)s [%(levelname)s] %(message)s'
+    logger = logging.getLogger(logger_name)
+    logger.setLevel(log_level)
+    set_stream_handler(log_level, format_string)
 
 
 def set_stream_handler(log_level, format_string=None):

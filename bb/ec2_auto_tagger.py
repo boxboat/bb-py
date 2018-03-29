@@ -11,87 +11,20 @@ import re
 import collections
 import bb
 
+from six import iteritems
+
 from bb.aws import ec2_utils as ec2
 from bb.aws import asg_utils as asg
+from bb.aws import region_utils as region_util
 
 
-def setup_logging(log_level=logging.INFO):
-    format_string = '%(asctime)s %(name)s [%(levelname)s] %(message)s'
-    logger = logging.getLogger(__name__)
-    logger.setLevel(log_level)
-    bb.set_stream_handler(log_level, format_string)
-
-
-def __tag_instances(log, instance_id, asg_name, basename, digits, region):
-    instances = {}
-    if asg_name:
-        ids = asg.get_asg_ec2_instance_ids(asg_name, region)
-        instances = ec2.get_ec2_instance_info(ids, region)
-    elif basename:
-        basename = basename + '*'
-        instances = ec2.get_ec2_instances(basename, region)
-
-    tag_map = {}
-    used = {}
-    if len(instances) > 0:
-        for k, v in instances.iteritems():
-            if v['State'] != 'terminated':
-                tagged = re.search(r'-\d+$', v['Name'])
-                tag_map[k] = {
-                    'id': k,
-                    'name': v['Name'],
-                    'tagged': (tagged is not None)}
-                if tagged is not None:
-                    used[int(tagged.group(0).lstrip('-'))] = v['Name']
-    else:
-        log.info('Unable to determine a tagging strategy')
-        return 0
-
-    size = len(tag_map)
-    if asg_name:
-        size = max(asg.get_asg_desired_size(asg_name, region), size)
-
-    avail = []
-    for i in range(0, size):
-        if i+1 not in used:
-            avail.append(i+1)
-
-    log.debug('Found Instances: %s', tag_map)
-
-    if instance_id in tag_map and not tag_map[instance_id]['tagged']:
-        ordered_instances = collections.OrderedDict(sorted(tag_map.items()))
-        log.debug('Reordered Instances: %s', ordered_instances)
-        idx = 0
-        for k, i in ordered_instances.iteritems():
-            log.debug('Processing instance: %s', i)
-            if k == instance_id:
-                name = '{0}-{tag:{fill}>{n}}'.format(
-                    i['name'],
-                    tag=str(avail[idx]),
-                    fill=0,
-                    n=digits
-                )
-                log.info('Assigning new name tag: %s to %s', name, k)
-                ec2.set_ec2_instance_name(k, name, region)
-            else:
-                if not i['tagged']:
-                    idx = idx + 1
-    else:
-        log.info(
-            '%s already tagged as %s',
-            instance_id,
-            tag_map[instance_id]['name']
-        )
-    return 0
-
-
-def main():
-    description=(
+def __parse_arguments():
+    description = (
         'EC2 auto tagger will automatically add a number suffix to your EC2 '
         'instance Name Tag. No arguments are required to execute on an '
         'instance that is part of an auto scaling group.'
     )
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
         '--instance-id',
         required=False,
@@ -131,14 +64,85 @@ def main():
         '--debug',
         action='store_true',
         help='Turn on debug logging')
-    args = parser.parse_args()
+    return parser, parser.parse_args()
+
+
+def __tag_instances(instance_id, asg_name, basename, digits):
+    log = logging.getLogger(__name__)
+    instances = {}
+    if asg_name:
+        ids = asg.get_asg_ec2_instance_ids(asg_name)
+        instances = ec2.get_ec2_instance_info(ids)
+    elif basename:
+        basename = basename + '*'
+        instances = ec2.get_ec2_instances(basename)
+
+    tag_map = {}
+    used = {}
+    if len(instances) > 0:
+        for k, v in iteritems(instances):
+            if v['State'] != 'terminated':
+                tagged = re.search(r'-\d+$', v['Name'])
+                tag_map[k] = {
+                    'id': k,
+                    'name': v['Name'],
+                    'tagged': (tagged is not None)}
+                if tagged is not None:
+                    used[int(tagged.group(0).lstrip('-'))] = v['Name']
+    else:
+        log.info('Unable to determine a tagging strategy')
+        return 0
+
+    size = len(tag_map)
+    if asg_name:
+        size = max(asg.get_asg_desired_size(asg_name), size)
+
+    avail = []
+    for i in range(0, size):
+        if i+1 not in used:
+            avail.append(i+1)
+
+    log.debug('Found Instances: %s', tag_map)
+
+    if instance_id in tag_map and not tag_map[instance_id]['tagged']:
+        ordered_instances = collections.OrderedDict(sorted(tag_map.items()))
+        log.debug('Reordered Instances: %s', ordered_instances)
+        idx = 0
+        for k, i in iteritems(ordered_instances):
+            log.debug('Processing instance: %s', i)
+            if k == instance_id:
+                name = '{0}-{tag:{fill}>{n}}'.format(
+                    i['name'],
+                    tag=str(avail[idx]),
+                    fill=0,
+                    n=digits
+                )
+                log.info('Assigning new name tag: %s to %s', name, k)
+                ec2.set_ec2_instance_name(k, name)
+            else:
+                if not i['tagged']:
+                    idx = idx + 1
+    else:
+        log.info(
+            '%s already tagged as %s',
+            instance_id,
+            tag_map[instance_id]['name']
+        )
+    return 0
+
+
+def main():
+    parser, args = __parse_arguments()
 
     if args.debug:
-        setup_logging(logging.DEBUG)
+        bb.setup_logging(__name__, logging.DEBUG)
     else:
-        setup_logging()
+        bb.setup_logging(__name__)
 
     log = logging.getLogger(__name__)
+
+    if args.region:
+        region_util.set_region(args.region)
 
     if args.asg_name and args.basename:
         parser.error('Cannot define basename and asg-name')
@@ -151,24 +155,13 @@ def main():
             instance_id
         )
 
-    digits = args.digits
     asg_name = args.asg_name
-    basename = args.basename
-
-    region = args.region
-    if not region:
-        region = ec2.get_instance_region()
-        log.info('Region not provided using ec2 instance region: %s', region)
-
     if not asg_name:
-        asg_name = asg.get_asg_name(instance_id, region)
+        asg_name = asg.get_asg_name(instance_id)
         log.info('Instance is associated with asg named: %s', asg_name)
 
     return __tag_instances(
-        log,
         instance_id,
         asg_name,
-        basename,
-        digits,
-        region
-    )
+        args.basename,
+        args.digits)

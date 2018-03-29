@@ -44,16 +44,16 @@ setup(
         'Topic :: Software Development :: Cloud Tools',
 
         # Pick your license as you wish
-        'License :: OSI Approved :: MIT License',
+        # 'License :: OSI Approved :: MIT License',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
-        # 'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3',
         # 'Programming Language :: Python :: 3.4',
         # 'Programming Language :: Python :: 3.5',
-        # 'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.6',
     ],
 
     keywords='devops aws cloud ansible',  # Optional
@@ -65,7 +65,8 @@ setup(
         'boto3>1.6.0',
         'requests >= 2.5.0',
         'requests-toolbelt >= 0.8.0',
-        'PyYAML'
+        'PyYAML',
+        'six'
     ],
 
     # List additional groups of dependencies here (e.g. development

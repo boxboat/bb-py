@@ -1,4 +1,4 @@
-all: build dist
+all: rst build dist
 
 rst:
 	pandoc --from=markdown --to=rst --output=README.rst README.md
@@ -10,7 +10,7 @@ install:
 	python setup.py install
 
 dist:
-	python setup.py bdist_wheel # --universal (when support for python 3)
+	python setup.py bdist_wheel --universal
 	tar -zcf bb-py.tgz dist
 
 clean:
