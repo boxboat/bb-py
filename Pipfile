@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+boto3 = ">=1.0.0,<2.0.0"
+requests = ">=2.0.0,<3.0.0"
+PyYAML = ">=3.0.0,<4.0.0"
+requests-toolbelt = ">=0.0.0,<1.0.0"
+six = ">=1.00,<2.0.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
