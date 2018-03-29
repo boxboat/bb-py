@@ -5,6 +5,7 @@
 # Author: Matthew DeVenny
 #
 
+from io import open
 import yaml
 
 
@@ -22,5 +23,5 @@ def read_yaml_file(filename):
     with open(filename, 'r') as stream:
         try:
             return yaml.load(stream)
-        except yaml.YAMLError as exc:
-            raise exc
+        except Exception as e:
+            raise e
