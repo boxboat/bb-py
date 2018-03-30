@@ -1,0 +1,42 @@
+# Developing BoxBoat Python Library
+
+## Developing
+
+#### Prerequisites
+* python3.6
+* virtualenv
+* [pipenv](https://docs.pipenv.org/)
+
+#### Checkout and Install Dependencies
+1. Clone repository from GitLab and navigate to repository root
+2. Run `pipenv sync --dev` to install dependencies.  This will create a new virtual environment on first run
+
+#### Run
+* **Shell**: `pipenv shell` will spawn a new shell with the virtual environment imported
+* **Setup IDE**: get virtual environment path from `pipenv --venv` and setup IDE using this path
+
+## Testing
+
+#### Unit Tests
+* Add to `./test/unit/` and mirror directory structure from `./bb-py`
+* Test classes use built-in [unittest](https://docs.python.org/3.6/library/unittest.html) module.  Test methods should start with `test_`
+* Tests are run with [nose](nose.readthedocs.io/en/latest/).  Test files should start with `test_`
+* To run unit tests: `pipenv run nosetests` from repository root
+
+#### Resources
+
+Non-python files used for testing belong in `./test/resources`
+
+#### Test Utilities
+
+Test-related python code belongs in `./test/testutils`
+
+## Build Process
+
+Build-related files and scripts belong in `./scripts`
+
+#### GitLab CI
+
+* GitLab CI runs unit tests on each commit and pull request
+* The GitLab CI tests are defined in `./.gitlab-ci.yml`
+* CI related scripts are located in `./scripts/ci`

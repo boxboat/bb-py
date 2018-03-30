@@ -1,0 +1,8 @@
+image: kennethreitz/pipenv
+
+before_script:
+  - ./scripts/ci/install.sh
+
+unit-test:
+  script:
+    - ./scripts/ci/unit-test.sh
