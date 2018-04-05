@@ -227,12 +227,12 @@ def __parse_reservation_info(reservations):
             info[i['InstanceId']] = {
                 'Tags': i['Tags'],
                 'AvailabilityZone': i['Placement']['AvailabilityZone'],
-                'PrivateIpAddress': i['PrivateIpAddress'],
-                'PrivateDnsName': i['PrivateDnsName'],
+                'PrivateIpAddress': i.get('PrivateIpAddress', None),
+                'PrivateDnsName': i.get('PrivateDnsName', None),
                 'PublicDnsName': i.get('PublicDnsName', None),
                 'PublicIpAddress': i.get('PublicIpAddress', None),
-                'VpcId': i['VpcId'],
-                'SubnetId': i['SubnetId'],
+                'VpcId': i.get('VpcId', None),
+                'SubnetId': i.get('SubnetId', None),
                 'State': i['State']['Name'],
                 'Name': name,
             }
