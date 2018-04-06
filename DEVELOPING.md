@@ -19,9 +19,18 @@
 
 #### Unit Tests
 * Add to `./test/unit/` and mirror directory structure from `./bb-py`
+* Unit tests should not make external calls to 3rd parties such as AWS; those belong in functional tests
 * Test classes use built-in [unittest](https://docs.python.org/3.6/library/unittest.html) module.  Test methods should start with `test_`
 * Tests are run with [nose](nose.readthedocs.io/en/latest/).  Test files should start with `test_`
-* To run unit tests: `pipenv run nosetests` from repository root
+* To run unit tests: `pipenv run nosetests` from `./test/unit`
+
+#### Functional Tests
+* Add to `./test/functional/` and mirror directory structure from `./bb-py`
+* Tokens for 3rd party APIs should not be committed; they should be added as [GitLab CI/CD Secrets](https://gitlab.com/boxboat/bb-py/settings/ci_cd)
+* CI uses the AWS [bb-py-ci](https://console.aws.amazon.com/iam/home?region=us-east-1#/users/bb-py-ci) IAM user.  Only the policies required by functional tests should be granted to that user.
+* Test classes use built-in [unittest](https://docs.python.org/3.6/library/unittest.html) module.  Test methods should start with `test_`
+* Tests are run with [nose](nose.readthedocs.io/en/latest/).  Test files should start with `test_`
+* To run unit tests: `pipenv run nosetests` from `./test/functional`
 
 #### Resources
 
