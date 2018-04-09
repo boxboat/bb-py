@@ -5,9 +5,11 @@
 ## Installing `bb-py`
 
 #### Prerequisites
-* python
-* pip
-* make
+* [Python3](https://www.python.org/downloads/)
+* [pip](https://pip.pypa.io/en/stable/installing/)
+* [pandoc](http://pandoc.org/installing.html)
+* [make](https://www.gnu.org/software/make/)
+
 
 #### Build
 1. Checkout release from gitlab
@@ -22,6 +24,9 @@
 `pip install bb_py-<version>.whl`
 
 ## Installed Commands
+
+#### AWS Execution Note
+* All commands assume that you have either [configured credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html) for your currently executing user or your instance is running with an [IAM Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) associated with it.
 
 ### `bb-ec2-auto-tagger`
 
@@ -41,7 +46,7 @@
 ### `bb-ec2-inventory`
 
 ##### Summary
-* Dynamically create EC2 Ansible inventory based on generic inventory definition file
+* Dynamically create EC2 [Ansible inventory](http://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html) based on generic inventory definition file
 * Example definition yaml file below.
 
 ##### YAML Definition File
@@ -176,10 +181,36 @@
   bb-ec2-ssh <search> --user foo
   ```
 
+### `bb-s3-cp`
+
+##### Summary
+* Provides S3 cp commands download, upload and remote copy. If src or destination is a directory will operate recursively.
+
+##### Usage
+
+* Download
+
+  ```
+  bb-s3-cp s3://<bucket-name>/<file-key> <local-dest>
+  ```
+
+* Upload
+
+  ```
+  bb-s3-cp <local-src> s3://<bucket-name>/<file-key>
+  ```
+
+* Remote Copy
+
+  ```
+  bb-s3-cp s3://<bucket-name>/<file-key> s3://<bucket-name>/<file-key>
+  ```
+
+
 ### `bb-vpc-inventory`
 
 ##### Summary
-* Dynamically create EC2 Ansible inventory for VPC
+* Dynamically create EC2 [Ansible inventory](http://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html) for VPC
 
 ###### Sample Output (Passed to Ansible)
 * You can preview this output using `--list` as an argument to `bb-ec2-inventory`
