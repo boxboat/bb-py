@@ -11,6 +11,7 @@ import argparse
 import json
 import bb
 
+from collections import OrderedDict
 from six import iteritems
 from bb.ansible import inventory_utils as inv_util
 from bb.aws import ec2_utils as ec2
@@ -66,7 +67,10 @@ def main():
             'No environment for VPC specified using instance vpc-id: %s',
             vpc_id)
 
-    instances = ec2.get_ec2_instances_in_vpc(vpc_id)
+    instances = OrderedDict(
+        sorted(
+            iteritems(ec2.get_ec2_instances_in_vpc(vpc_id)),
+            key=lambda x: x[1]['Name']))
     vpc = inv_util.create_inventory([
         inv_util.create_inventory_group(
             'vpc_inventory',

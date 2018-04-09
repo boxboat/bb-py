@@ -7,6 +7,7 @@
 
 import logging
 
+from collections import OrderedDict
 from six import iteritems
 
 from bb.utils import file_utils as file_util
@@ -129,7 +130,10 @@ def create_dynamic_ec2_inventory(definition_file, region=None):
     groups = []
     if 'ec2_groups' in inv['ec2_inventory_groups']:
         for g in inv['ec2_inventory_groups']['ec2_groups']:
-            results = ec2.get_ec2_instances(g['name'], region)
+            results = OrderedDict(
+                sorted(
+                    iteritems(ec2.get_ec2_instances(g['name'], region)),
+                    key=lambda x: x[1]['Name']))
             if len(results) > 0:
                 instances = [
                     v['PrivateIpAddress'] for k, v in iteritems(results)
@@ -145,11 +149,12 @@ def create_dynamic_ec2_inventory(definition_file, region=None):
 
     if 'asg_groups' in inv['ec2_inventory_groups']:
         for g in inv['ec2_inventory_groups']['asg_groups']:
-            results = ec2.get_ec2_instance_info(
-                asg.get_asg_ec2_instance_ids(
-                    g['name'],
-                    region)
-            )
+            results = OrderedDict(
+                sorted(
+                    iteritems(
+                        ec2.get_ec2_instance_info(
+                            asg.get_asg_ec2_instance_ids(g['name'], region))),
+                    key=lambda x: x[1]['Name']))
             if len(results) > 0:
                 instances = [
                     v['PrivateIpAddress'] for k, v in iteritems(results)
