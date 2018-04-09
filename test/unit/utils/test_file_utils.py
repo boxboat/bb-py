@@ -3,7 +3,7 @@ from bb.utils import file_utils
 from test.testutils import test_resource
 
 
-class FileUtilsTest(unittest.TestCase):
+class TestFileUtils(unittest.TestCase):
 
     def test_read_yaml_file(self):
         yamlFilePath = test_resource.path("utils", "file_utils", "test.yml")
