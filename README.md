@@ -151,6 +151,31 @@
   ```
 
 
+### `bb-ec2-ssh`
+
+##### Summary
+* SSH to ec2 instance forwarding the user SSH key. User is presented with a list of instances to select from that match the search string.
+
+
+##### Usage
+* Default SSH using current user and private ip address
+
+  ```
+  bb-ec2-ssh <search>
+  ```
+
+* SSH using current user credentials and public ip address (if available)
+
+  ```
+  bb-ec2-ssh <search> --public
+  ```
+
+* SSH using user foo
+
+  ```
+  bb-ec2-ssh <search> --user foo
+  ```
+
 ### `bb-vpc-inventory`
 
 ##### Summary

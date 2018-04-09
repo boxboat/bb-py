@@ -63,6 +63,7 @@ setup(
     # install_requires
     install_requires=[
         'boto3>1.6.0',
+        'inquirer >=2.2.0,<3.0.0',
         'requests >= 2.5.0',
         'requests-toolbelt >= 0.8.0',
         'PyYAML',
@@ -107,6 +108,7 @@ setup(
         'console_scripts': [
             'bb-ec2-auto-tagger=bb.ec2_auto_tagger:main',
             'bb-ec2-inventory=bb.ec2_inventory:main',
+            'bb-ec2-ssh=bb.ec2_ssh:main',
             'bb-vpc-inventory=bb.vpc_inventory:main'
         ],
     },
