@@ -17,14 +17,22 @@ log = logging.getLogger(__name__)
 
 def __init_region():
     log.debug('Initializing region')
+    region = None
     try:
-        __set_region(__get_default_region())
-    except Exception as region_exception:
-        log.warn('No default region defined %s', region_exception)
+        region = __get_default_region()
+        if region is not None:
+            __set_region(region)
+    except Exception as e:
+        log.warn(
+            'No default region defined by user will attempt to use instance '
+            'region %s',
+            e)
+
+    if region is None:
         try:
             __set_region(get_instance_region())
         except Exception as e:
-            log.warn('Unable to retrieve instance region %s', e)
+            log.warn('Could not retrieve instance region')
 
 
 def __get_default_region():
