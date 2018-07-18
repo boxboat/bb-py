@@ -109,6 +109,7 @@ setup(
             'bb-ec2-auto-tagger=bb.ec2_auto_tagger:main',
             'bb-ec2-inventory=bb.ec2_inventory:main',
             'bb-ec2-ssh=bb.ec2_ssh:main',
+            'bb-route53-dns=bb.route53_dns:main',
             'bb-s3-cp=bb.s3_cp:main',
             'bb-vpc-inventory=bb.vpc_inventory:main'
         ],
