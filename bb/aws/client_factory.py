@@ -55,6 +55,20 @@ def get_ec2_resource(region: str = None) -> object:
     return __get_resource('ec2', region)
 
 
+def get_route53_client(region: str = None) -> object:
+    """Get boto3 s3 client
+
+    Parameters
+    ----------
+        region: str
+            AWS region (optional)
+    Returns
+    -------
+    route53 client
+    """
+    return __get_client('route53', region)
+
+
 def get_s3_client(region: str = None) -> object:
     """Get boto3 s3 client
 

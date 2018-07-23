@@ -35,6 +35,94 @@ def get_instance_id():
     return id_request.text
 
 
+def get_current_instance_name(strip_resource_tag=False):
+    """ Retrieve the EC2 instance name tag for instance this method is called
+    from.
+
+    Returns
+    -------
+    Name of current instance
+    """
+    return get_instance_name(get_instance_id(), strip_resource_tag)
+
+
+def get_current_instance_private_ip():
+    """ Retrieve the EC2 instance private ip for instance this method is called
+    from.
+
+    Returns
+    -------
+    private_ip address
+    """
+    return get_instance_private_ip(get_instance_id())
+
+
+def get_current_instance_public_ip():
+    """ Retrieve the EC2 instance public ip for instance this method is called
+    from.
+
+    Returns
+    -------
+    public_ip address
+    """
+    return get_instance_public_ip(get_instance_id())
+
+
+def get_instance_name(instance_id, strip_resource_tag=False, region=None):
+    """ Retrieve the EC2 instance name tag for provided instance id
+
+    Paramters
+    ---------
+        instance_id: str
+            Instance id to retrieve name tag for
+        strip_resource_tag: bool
+            True if the Resource tag prefix should be removed
+
+    Returns
+    -------
+    Name of provided instance
+    """
+    instance_info = get_ec2_instance_info([instance_id], region)[instance_id]
+    if strip_resource_tag and instance_info['Resource'] != '':
+        return instance_info['Name'][len(instance_info['Resource'])+1:]
+    else:
+        return instance_info['Name']
+
+
+def get_instance_private_ip(instance_id, region=None):
+    """ Retrieve the EC2 instance private ip address for provided instance id
+
+    Paramters
+    ---------
+        instance_id: str
+            Instance id to retrieve name tag for
+
+    Returns
+    -------
+    private ip address for provided instance
+    """
+    return get_ec2_instance_info(
+        [instance_id],
+        region)[instance_id]['PrivateIpAddress']
+
+
+def get_instance_public_ip(instance_id, region=None):
+    """ Retrieve the EC2 instance private ip address for provided instance id
+
+    Paramters
+    ---------
+        instance_id: str
+            Instance id to retrieve name tag for
+
+    Returns
+    -------
+    private ip address for provided instance
+    """
+    return get_ec2_instance_info(
+        [instance_id],
+        region)[instance_id]['PublicIpAddress']
+
+
 def get_instance_vpc_id():
     """ Retrieve the EC2 vpc id from the instance-data url for instance this
     method is called from.
@@ -221,9 +309,12 @@ def __parse_reservation_info(reservations):
     for r in reservations:
         for i in r['Instances']:
             name = ''
+            resource = ''
             for tag in i['Tags']:
                 if tag['Key'] == 'Name':
                     name = tag['Value']
+                if tag['Key'] == 'Resource':
+                    resource = tag['Value']
             info[i['InstanceId']] = {
                 'Tags': i['Tags'],
                 'AvailabilityZone': i['Placement']['AvailabilityZone'],
@@ -235,6 +326,7 @@ def __parse_reservation_info(reservations):
                 'SubnetId': i.get('SubnetId', None),
                 'State': i['State']['Name'],
                 'Name': name,
+                'Resource': resource,
             }
     log.debug('EC2 instance info: %s', info)
     return info

@@ -61,13 +61,13 @@
       asg_groups:
         - name: beta-deploy-Masters-AWVW38QQ5V7N-MasterAutoScalingGroup-1Y3LWSEHX9GT
           inventory:
-            name: ucp_nodes
+            name: ucp-nodes
             vars:
               - ucp_username: boxboat
               - ucp_password: somepass
         - name: beta-deploy-Workers-Y86UKFTAQ6O9-WorkerAutoScalingGroup-WGI3TXKZMA4U
           inventory:
-            name: ucp_workers
+            name: worker-nodes
             vars:
               - ucp_username: boxboat
               - ucp_password: somepass
@@ -77,7 +77,7 @@
       ec2_groups:
         - name: beta-dtr-*
           inventory:
-            name: dtr_nodes
+            name: dtr-nodes
             vars:
               - ucp_username: boxboat
               - ucp_password: somepass
@@ -88,14 +88,14 @@
 
   ```json
   {
-    "dtr_nodes": {
+    "dtr-nodes": {
       "hosts": [
         "10.10.2.125",
         "10.10.4.97",
         "10.10.6.163"
       ]
     },
-    "ucp_workers": {
+    "worker-nodes": {
       "hosts": [
         "10.10.4.66",
         "10.10.6.103"
@@ -104,7 +104,7 @@
         "dtr_nodes"
       ]
     },
-    "ucp_nodes": {
+    "ucp-nodes": {
       "hosts": [
         "10.10.4.109",
         "10.10.2.130",
@@ -152,7 +152,7 @@
 
 ##### Usage
   ```
-  INVENTORY_FILE=<path>/file.yaml ansible-playbook -i `which bb-ec2-inventory` playbook.yml
+  INVENTORY_DEFINITION=<path>/file.yaml ansible-playbook -i `which bb-ec2-inventory` playbook.yml
   ```
 
 
@@ -179,6 +179,44 @@
 
   ```
   bb-ec2-ssh <search> --user foo
+  ```
+
+### `bb-route53-dns`
+
+#### Summary
+* Create A records in private or public hosted zones in Route53. Will automatically get localhost information if running on target EC2 instance. The name used when you are executing locally will be based upon the Name tag for the EC2 instance and it will strip off a Resource tag prefix from that name.
+* e.g.
+  ```
+  Name: foo-bastion-01
+  Reource: foo
+  Args:
+  --public-zone foo.com
+  --private-zone foo.internal
+
+  Resulting Route53 entries:
+  bastion-01.foo.com
+  bastion-01.foo.internal
+
+  With prefix args:
+  --private-zone-prefix dev
+  --public-zone-prefix dev
+
+  bastion-01.dev.foo.com
+  bastion-01.dev.foo.internal
+
+  ```
+
+#### Usage
+
+* Executing on EC2 host you are creating DNS entries for
+
+  ```
+  bb-route53-dns --private-zone <private-zone> --public-zone <public-zone --public-zone-prefix <prefix> --private-zone <prefix>
+  ```
+* Executing on a remote host
+
+  ```
+  bb-route53-dns --name <name> --public-ip <public-ip> --private-ip <private-ip> --private-zone <private-zone> --public-zone <public-zone --public-zone-prefix <prefix> --private-zone <prefix>
   ```
 
 ### `bb-s3-cp`
