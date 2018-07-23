@@ -28,12 +28,24 @@ def __parse_arguments():
     parser.add_argument(
         '--private-zone',
         required=False,
-        help='Route53 private hosted zone (must provide private or public)'
+        help='Route53 private hosted zone name (must provide private or public)'
     )
     parser.add_argument(
         '--public-zone',
         required=False,
-        help='Route53 public hosted zone (must provide private or public)'
+        help='Route53 public hosted zone name (must provide private or public)'
+    )
+    parser.add_argument(
+        '--private-zone-id',
+        required=False,
+        help='Route53 private hosted zone ID only required if you have '
+             'duplicate zone names'
+    )
+    parser.add_argument(
+        '--public-zone-id',
+        required=False,
+        help='Route53 public hosted zone ID only required if you have '
+             'duplicate zone names'
     )
     parser.add_argument(
         '--private-ip',
@@ -78,12 +90,13 @@ def __parse_arguments():
     return parser, parser.parse_args()
 
 
-def __update_record(name, zone_prefix, zone, ip_address):
+def __update_record(name, zone_prefix, zone, zone_id, ip_address):
     return route53.create_or_update_dns_a_record(
         name,
         zone_prefix,
         zone,
-        ip_address)
+        ip_address,
+        zone_id)
 
 
 def main():
@@ -127,10 +140,12 @@ def main():
         __update_record(name,
                         args.private_zone_prefix,
                         args.private_zone,
+                        args.private_zone_id,
                         private_ip)
 
     if args.public_zone and public_ip:
         __update_record(name,
                         args.public_zone_prefix,
                         args.public_zone,
+                        args.public_zone_id,
                         public_ip)

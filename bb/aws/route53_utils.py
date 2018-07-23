@@ -17,6 +17,7 @@ def create_or_update_dns_a_record(name,
                                   zone_prefix,
                                   zone_dns,
                                   ip_address,
+                                  zone_id=None,
                                   region=None):
     """Create A record for provided details
 
@@ -28,6 +29,8 @@ def create_or_update_dns_a_record(name,
             zone prefix
         zone_dns: str
             hosted zone DNS
+        zone_id: str
+            hosted zone id (can be left as `None`)
         ip_address: str
             ip_address for the A record
         region: str
@@ -48,7 +51,12 @@ def create_or_update_dns_a_record(name,
         ip_address)
     client = aws_client_factory.get_route53_client(region)
 
-    zone_id = get_hosted_zone_id(zone_dns, region)
+    if zone_id is None:
+        log.debug(
+            'Retrieve HostedZone ID based upon name: [%s] from Route53',
+            zone_dns)
+        zone_id = get_hosted_zone_id(zone_dns, region)
+
     response = client.change_resource_record_sets(
         HostedZoneId=zone_id,
         ChangeBatch={
