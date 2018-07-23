@@ -184,7 +184,27 @@
 ### `bb-route53-dns`
 
 #### Summary
-* Create A records in private or public hosted zones in Route53. Will automatically get localhost information if running on target EC2 instance.
+* Create A records in private or public hosted zones in Route53. Will automatically get localhost information if running on target EC2 instance. The name used when you are executing locally will be based upon the Name tag for the EC2 instance and it will strip off a Resource tag prefix from that name.
+* e.g.
+  ```
+  Name: foo-bastion-01
+  Reource: foo
+  Args:
+  --public-zone foo.com
+  --private-zone foo.internal
+
+  Resulting Route53 entries:
+  bastion-01.foo.com
+  bastion-01.foo.internal
+
+  With prefix args:
+  --private-zone-prefix dev
+  --public-zone-prefix dev
+
+  bastion-01.dev.foo.com
+  bastion-01.dev.foo.internal
+
+  ```
 
 #### Usage
 
