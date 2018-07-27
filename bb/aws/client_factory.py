@@ -13,7 +13,8 @@ from . import region_utils as aws_region
 log = logging.getLogger(__name__)
 
 
-def get_asg_client(region: str = None) -> object:
+def get_asg_client(region = None):
+    # type: (str) -> object
     """Get boto3 asg client
 
     Parameters
@@ -27,7 +28,8 @@ def get_asg_client(region: str = None) -> object:
     return __get_client('autoscaling', region)
 
 
-def get_ec2_client(region: str = None) -> object:
+def get_ec2_client(region = None):
+    # type: (str) -> object
     """Get boto3 ec2 client
 
     Parameters
@@ -41,7 +43,8 @@ def get_ec2_client(region: str = None) -> object:
     return __get_client('ec2', region)
 
 
-def get_ec2_resource(region: str = None) -> object:
+def get_ec2_resource(region = None):
+    # type: (str) -> object
     """Get boto3 ec2 resource
 
     Parameters
@@ -55,7 +58,8 @@ def get_ec2_resource(region: str = None) -> object:
     return __get_resource('ec2', region)
 
 
-def get_route53_client(region: str = None) -> object:
+def get_route53_client(region = None):
+    # type: (str) -> object
     """Get boto3 s3 client
 
     Parameters
@@ -69,7 +73,8 @@ def get_route53_client(region: str = None) -> object:
     return __get_client('route53', region)
 
 
-def get_s3_client(region: str = None) -> object:
+def get_s3_client(region = None):
+    # type: (str) -> object
     """Get boto3 s3 client
 
     Parameters
@@ -83,7 +88,8 @@ def get_s3_client(region: str = None) -> object:
     return __get_client('s3', region)
 
 
-def get_s3_resource(region: str = None) -> object:
+def get_s3_resource(region = None):
+    # type: (str) -> object
     """Get boto3 s3 resource
 
     Parameters
