@@ -1,7 +1,4 @@
-all: rst build dist
-
-rst:
-	pandoc --from=markdown --to=rst --output=README.rst README.md
+all: build dist
 
 build:
 	python setup.py build
