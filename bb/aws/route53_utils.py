@@ -42,6 +42,8 @@ def create_or_update_dns_a_record(name,
     """
     dns_name = ''
     if zone_prefix is not None:
+        if zone_prefix.endswith('.'):
+            zone_prefix = zone_prefix[:-1]
         dns_name = name + '.' + zone_prefix + '.' + zone_dns
     else:
         dns_name = name + '.' + zone_dns
