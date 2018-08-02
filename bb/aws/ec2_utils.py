@@ -7,7 +7,7 @@
 
 import logging
 import requests
-import json
+
 from . import client_factory as aws_client_factory
 
 log = logging.getLogger(__name__)
@@ -21,6 +21,7 @@ def get_instance_id():
     -------
     instance-id of current instance
     """
+    log.debug('Get instance-id for current instance')
     id_request = requests.get(
         'http://instance-data/latest/meta-data/instance-id'
     )
@@ -30,28 +31,96 @@ def get_instance_id():
             id_request.status_code,
             id_request.text
         )
+    log.debug('Return instance-id: %s', id_request.text)
     return id_request.text
 
 
-def get_instance_region():
-    """ Retrieve the region from the instance-data url for instance this
-    method is called from.
+def get_current_instance_name(strip_resource_tag=False):
+    """ Retrieve the EC2 instance name tag for instance this method is called
+    from.
 
     Returns
     -------
-    aws region of current instance
+    Name of current instance
     """
-    id_request = requests.get(
-        'http://instance-data/latest/dynamic/instance-identity/document'
-    )
-    if id_request.status_code != 200:
-        raise Exception(
-            'Unable to retrieve instance-identity, Response: %s %s',
-            id_request.status_code,
-            id_request.text
-        )
-    json_response = json.loads(id_request.text)
-    return json_response['region']
+    return get_instance_name(get_instance_id(), strip_resource_tag)
+
+
+def get_current_instance_private_ip():
+    """ Retrieve the EC2 instance private ip for instance this method is called
+    from.
+
+    Returns
+    -------
+    private_ip address
+    """
+    return get_instance_private_ip(get_instance_id())
+
+
+def get_current_instance_public_ip():
+    """ Retrieve the EC2 instance public ip for instance this method is called
+    from.
+
+    Returns
+    -------
+    public_ip address
+    """
+    return get_instance_public_ip(get_instance_id())
+
+
+def get_instance_name(instance_id, strip_resource_tag=False, region=None):
+    """ Retrieve the EC2 instance name tag for provided instance id
+
+    Paramters
+    ---------
+        instance_id: str
+            Instance id to retrieve name tag for
+        strip_resource_tag: bool
+            True if the Resource tag prefix should be removed
+
+    Returns
+    -------
+    Name of provided instance
+    """
+    instance_info = get_ec2_instance_info([instance_id], region)[instance_id]
+    if strip_resource_tag and instance_info['Resource'] != '':
+        return instance_info['Name'][len(instance_info['Resource'])+1:]
+    else:
+        return instance_info['Name']
+
+
+def get_instance_private_ip(instance_id, region=None):
+    """ Retrieve the EC2 instance private ip address for provided instance id
+
+    Paramters
+    ---------
+        instance_id: str
+            Instance id to retrieve name tag for
+
+    Returns
+    -------
+    private ip address for provided instance
+    """
+    return get_ec2_instance_info(
+        [instance_id],
+        region)[instance_id]['PrivateIpAddress']
+
+
+def get_instance_public_ip(instance_id, region=None):
+    """ Retrieve the EC2 instance private ip address for provided instance id
+
+    Paramters
+    ---------
+        instance_id: str
+            Instance id to retrieve name tag for
+
+    Returns
+    -------
+    private ip address for provided instance
+    """
+    return get_ec2_instance_info(
+        [instance_id],
+        region)[instance_id]['PublicIpAddress']
 
 
 def get_instance_vpc_id():
@@ -62,6 +131,7 @@ def get_instance_vpc_id():
     -------
     vpc-id of current instance
     """
+    log.debug('Get instance vpc-id for current instance')
     macs_request = requests.get(
         'http://instance-data/latest/meta-data/network/interfaces/macs/'
     )
@@ -83,6 +153,7 @@ def get_instance_vpc_id():
             vpc_id_request.status_code,
             vpc_id_request.text
         )
+    log.debug('Return vpc-id: %s', vpc_id_request.text)
     return vpc_id_request.text
 
 
@@ -93,6 +164,7 @@ def get_vpc_id_using_vpc_name(vpc_name, region=None):
     -------
     vpc-id matching vpc_name
     """
+    log.debug('Retrieving vpc-id: %s', vpc_name)
     resource = aws_client_factory.get_ec2_resource(region)
     vpc_list = list(
         resource.vpcs.filter(
@@ -127,6 +199,7 @@ def get_ec2_instances_in_vpc(vpc_id, region=None):
     A `dict` of EC2 instances
 
     """
+    log.debug('Retrieving EC2 instances in vpc: %s', vpc_id)
     client = aws_client_factory.get_ec2_client(region)
     reservations = []
     next_token = ''
@@ -163,6 +236,7 @@ def get_ec2_instances(name, region=None):
     A `dict` of EC2 instances
 
     """
+    log.debug('Retrieving EC2 instances matching name: %s', name)
     client = aws_client_factory.get_ec2_client(region)
     instances = client.describe_instances(
         Filters=[
@@ -191,6 +265,7 @@ def get_ec2_instance_info(instance_ids, region=None):
     A `dict` of EC2 instances
 
     """
+    log.debug('Retrieving EC2 instances: %s', instance_ids)
     client = aws_client_factory.get_ec2_client(region)
     instances = client.describe_instances(
         InstanceIds=instance_ids
@@ -198,7 +273,7 @@ def get_ec2_instance_info(instance_ids, region=None):
     return __parse_reservation_info(instances['Reservations'])
 
 
-def set_ec2_instance_name(instance_id, name, region):
+def set_ec2_instance_name(instance_id, name, region=None):
     """Set the ec2 instance name tag
 
     Parameters
@@ -214,6 +289,7 @@ def set_ec2_instance_name(instance_id, name, region):
     None
 
     """
+    log.debug('Setting EC2 instance: %s name: %s', instance_id, name)
     client = aws_client_factory.get_ec2_client(region)
     client.create_tags(
         Resources=[
@@ -229,25 +305,28 @@ def set_ec2_instance_name(instance_id, name, region):
 
 
 def __parse_reservation_info(reservations):
-    log.debug('Parsing reservation info')
     info = {}
     for r in reservations:
         for i in r['Instances']:
             name = ''
+            resource = ''
             for tag in i['Tags']:
                 if tag['Key'] == 'Name':
                     name = tag['Value']
+                if tag['Key'] == 'Resource':
+                    resource = tag['Value']
             info[i['InstanceId']] = {
                 'Tags': i['Tags'],
                 'AvailabilityZone': i['Placement']['AvailabilityZone'],
-                'PrivateIpAddress': i['PrivateIpAddress'],
-                'PrivateDnsName': i['PrivateDnsName'],
+                'PrivateIpAddress': i.get('PrivateIpAddress', None),
+                'PrivateDnsName': i.get('PrivateDnsName', None),
                 'PublicDnsName': i.get('PublicDnsName', None),
                 'PublicIpAddress': i.get('PublicIpAddress', None),
-                'VpcId': i['VpcId'],
-                'SubnetId': i['SubnetId'],
+                'VpcId': i.get('VpcId', None),
+                'SubnetId': i.get('SubnetId', None),
                 'State': i['State']['Name'],
                 'Name': name,
+                'Resource': resource,
             }
-    log.debug('Returning reseration info: %s', info)
+    log.debug('EC2 instance info: %s', info)
     return info

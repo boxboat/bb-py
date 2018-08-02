@@ -7,6 +7,9 @@
 
 import logging
 
+from collections import OrderedDict
+from six import iteritems
+
 from bb.utils import file_utils as file_util
 from bb.aws import ec2_utils as ec2
 from bb.aws import asg_utils as asg
@@ -47,7 +50,7 @@ def create_inventory(groups):
             for host in g['hosts']:
                 hostvars = {}
                 for var in g['vars']:
-                    for k, v in var.iteritems():
+                    for k, v in iteritems(var):
                         hostvars[k] = v
                 inv['_meta']['hostvars'][host] = hostvars
     return inv
@@ -81,7 +84,7 @@ def create_inventory_group(name, host_list, vars=[], child_groups=[]):
     return group
 
 
-def create_dynamic_ec2_inventory(definition_file, region):
+def create_dynamic_ec2_inventory(definition_file, region=None):
     """ Create a fully formed ansible ec2 inventory dictionary based on the
     definition file.
 
@@ -127,10 +130,13 @@ def create_dynamic_ec2_inventory(definition_file, region):
     groups = []
     if 'ec2_groups' in inv['ec2_inventory_groups']:
         for g in inv['ec2_inventory_groups']['ec2_groups']:
-            results = ec2.get_ec2_instances(g['name'], region)
+            results = OrderedDict(
+                sorted(
+                    iteritems(ec2.get_ec2_instances(g['name'], region)),
+                    key=lambda x: x[1]['Name']))
             if len(results) > 0:
                 instances = [
-                    v['PrivateIpAddress'] for k, v in results.iteritems()
+                    v['PrivateIpAddress'] for k, v in iteritems(results)
                 ]
                 groups.append(
                     create_inventory_group(
@@ -143,14 +149,15 @@ def create_dynamic_ec2_inventory(definition_file, region):
 
     if 'asg_groups' in inv['ec2_inventory_groups']:
         for g in inv['ec2_inventory_groups']['asg_groups']:
-            results = ec2.get_ec2_instance_info(
-                asg.get_asg_ec2_instance_ids(
-                    g['name'],
-                    region)
-            )
+            results = OrderedDict(
+                sorted(
+                    iteritems(
+                        ec2.get_ec2_instance_info(
+                            asg.get_asg_ec2_instance_ids(g['name'], region))),
+                    key=lambda x: x[1]['Name']))
             if len(results) > 0:
                 instances = [
-                    v['PrivateIpAddress'] for k, v in results.iteritems()
+                    v['PrivateIpAddress'] for k, v in iteritems(results)
                 ]
                 groups.append(
                     create_inventory_group(

@@ -1,5 +1,6 @@
 # bb-py additions
 *.tgz
+README.rst
 
 # pulled from github/gitignore/Python.gitignore
 # Byte-compiled / optimized / DLL files
@@ -106,3 +107,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# IntelliJ
+/.idea
