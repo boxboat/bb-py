@@ -66,6 +66,7 @@ setup(
         'inquirer >=2.2.0,<3.0.0',
         'requests >= 2.5.0',
         'requests-toolbelt >= 0.8.0',
+        'readchar >= 2.0.0, <3.0.0',
         'PyYAML',
         'six'
     ],
