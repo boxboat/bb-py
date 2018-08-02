@@ -21,7 +21,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='bb-py',  # Required
-    version='0.1.0',  # Required
+    version='1.0.0',  # Required
     description='Collection of BoxBoat Python cloud utilities',  # Required
     long_description=long_description,
     url='https://gitlab.com/boxboat/bb-py',  # Optional
@@ -37,7 +37,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
