@@ -55,6 +55,6 @@ def read_yaml_file(filename):
     """
     with open(filename, 'r') as stream:
         try:
-            return yaml.load(stream)
+            return yaml.load(stream, Loader=yaml.FullLoader)
         except Exception as e:
             raise e
