@@ -18,7 +18,7 @@ def __parse_arguments():
     description = (
         'Ansible EC2 Dynamic Inventory - set INVENTORY_DEFINITION in the '
         'environment to point to an inventory definition file (see '
-        'documentation) and this script will generate a dynamic '
+        'documentation) or yaml string and this script will generate a dynamic '
         'inventory based on the definition .')
     parser = argparse.ArgumentParser(
         description=description)
