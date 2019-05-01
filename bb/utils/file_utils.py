@@ -58,3 +58,20 @@ def read_yaml_file(filename):
             return yaml.load(stream, Loader=yaml.FullLoader)
         except Exception as e:
             raise e
+
+def is_file(filename):
+    """Determine if the string passed in refers to a valid file
+
+    Parameters
+    ----------
+        filename: `str`
+            attempt to open the file for reading
+    Returns
+    -------
+    `bool` indicating a file
+    """
+    try:
+      open(filename, "r")
+      return True
+    except IOError:
+      return False
