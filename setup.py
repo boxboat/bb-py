@@ -21,7 +21,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='bb-py',  # Required
-    version='1.1.0',  # Required
+    version='1.1.1',  # Required
     description='Collection of BoxBoat Python cloud utilities',  # Required
     long_description=long_description,
     url='https://gitlab.com/boxboat/bb-py',  # Optional
@@ -62,12 +62,12 @@ setup(
 
     # install_requires
     install_requires=[
-        'boto3>1.6.0',
+        'boto3 > 1.6.0,<2.0.0',
         'inquirer >=2.3.0,<3.0.0',
-        'requests >= 2.5.0',
-        'requests-toolbelt >= 0.8.0',
-        'PyYAML',
-        'six'
+        'requests >= 2.5.0,<3.0.0',
+        'requests-toolbelt >= 0.8.0,<1.0.0',
+        'PyYAML >= 5.0.0,<6.0.0',
+        'six >=1.0.0,<2.0.0'
     ],
 
     # List additional groups of dependencies here (e.g. development
