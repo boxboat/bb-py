@@ -6,6 +6,7 @@
 #
 
 import logging
+import yaml
 
 from collections import OrderedDict
 from six import iteritems
@@ -84,14 +85,14 @@ def create_inventory_group(name, host_list, vars=[], child_groups=[]):
     return group
 
 
-def create_dynamic_ec2_inventory(definition_file, region=None):
+def create_dynamic_ec2_inventory(definition, region=None):
     """ Create a fully formed ansible ec2 inventory dictionary based on the
     definition file.
 
     Parameters
     ----------
-        definition_file: `file`
-            filename of the definition yaml file
+        definition: `str`
+            filename of the definition yaml file or yaml string
         region: `str`
             aws region
 
@@ -125,7 +126,12 @@ def create_dynamic_ec2_inventory(definition_file, region=None):
             name: alpha_hosts
     ```
     """
-    inv = file_util.read_yaml_file(definition_file)
+    inv = None
+    if file_util.is_file(definition):
+        inv = file_util.read_yaml_file(definition)
+    else:
+        inv = yaml.load(definition, Loader=yaml.FullLoader)
+
     log.debug('Definition File Contents: %s', inv)
     groups = []
     if 'ec2_groups' in inv['ec2_inventory_groups']:
