@@ -50,6 +50,7 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 
     keywords='devops aws cloud ansible',  # Optional
@@ -62,7 +63,7 @@ setup(
         'inquirer >=2.3.0,<3.0.0',
         'requests >= 2.5.0,<3.0.0',
         'requests-toolbelt >= 0.8.0,<1.0.0',
-        'PyYAML >= 5.0.0,<6.0.0',
+        'PyYAML >= 5.0.0,<=5.1.0',
         'six >=1.0.0,<2.0.0'
     ],
 
