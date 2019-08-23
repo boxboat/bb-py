@@ -62,12 +62,12 @@ setup(
 
     # install_requires
     install_requires=[
-        'boto3>1.6.0',
+        'boto3 > 1.6.0,<2.0.0',
         'inquirer >=2.3.0,<3.0.0',
-        'requests >= 2.5.0',
-        'requests-toolbelt >= 0.8.0',
-        'PyYAML',
-        'six'
+        'requests >= 2.5.0,<3.0.0',
+        'requests-toolbelt >= 0.8.0,<1.0.0',
+        'PyYAML >= 5.0.0,<6.0.0',
+        'six >=1.0.0,<2.0.0'
     ],
 
     # List additional groups of dependencies here (e.g. development

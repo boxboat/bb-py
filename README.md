@@ -49,7 +49,7 @@
 * Dynamically create EC2 [Ansible inventory](http://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html) based on generic inventory definition file
 * Example definition yaml file below.
 
-##### YAML Definition File
+##### YAML Definition
 * Note `vars` and `children` are optional fields in the `inventory` dictionary.
 * You can define `asg_groups` or `ec2_groups` or a mixture as shown in the example
 
@@ -150,9 +150,40 @@
   }
   ```
 
-##### Usage
+##### File Based Usage
   ```
   INVENTORY_DEFINITION=<path>/file.yaml ansible-playbook -i `which bb-ec2-inventory` playbook.yml
+  ```
+##### Environment String Based Usage
+  ```
+  # set the INVENTORY_DEFINITION to a yaml string
+  INVENTORY_DEFINITION="
+  ec2_inventory_groups:
+    asg_groups:
+      - name: beta-deploy-Masters-AWVW38QQ5V7N-MasterAutoScalingGroup-1Y3LWSEHX9GT
+        inventory:
+          name: ucp-nodes
+          vars:
+            - ucp_username: boxboat
+            - ucp_password: somepass
+      - name: beta-deploy-Workers-Y86UKFTAQ6O9-WorkerAutoScalingGroup-WGI3TXKZMA4U
+        inventory:
+          name: worker-nodes
+          vars:
+            - ucp_username: boxboat
+            - ucp_password: somepass
+          children:
+            - dtr_nodes
+
+    ec2_groups:
+      - name: beta-dtr-*
+        inventory:
+          name: dtr-nodes
+          vars:
+            - ucp_username: boxboat
+            - ucp_password: somepass"
+    ansible-playbook -i `which bb-ec2-inventory` playbook.yml
+  "
   ```
 
 
