@@ -136,14 +136,19 @@ def create_dynamic_ec2_inventory(definition, region=None):
     groups = []
     if 'ec2_groups' in inv['ec2_inventory_groups']:
         for g in inv['ec2_inventory_groups']['ec2_groups']:
+            ipAddressType = 'PrivateIpAddress'
+            if 'addressType' in g.keys():
+                ipAddressType = g['addressType']
+
             results = OrderedDict(
                 sorted(
                     iteritems(ec2.get_ec2_instances(g['name'], region)),
                     key=lambda x: x[1]['Name']))
             if len(results) > 0:
-                instances = [
-                    v['PrivateIpAddress'] for k, v in iteritems(results)
-                ]
+                instances = []
+                for k, v in iteritems(results):
+                    if v[ipAddressType] is not None:
+                        instances.append(v[ipAddressType])
                 groups.append(
                     create_inventory_group(
                         g['inventory']['name'],
@@ -155,6 +160,9 @@ def create_dynamic_ec2_inventory(definition, region=None):
 
     if 'asg_groups' in inv['ec2_inventory_groups']:
         for g in inv['ec2_inventory_groups']['asg_groups']:
+            ipAddressType = 'PrivateIpAddress'
+            if 'addressType' in g.keys():
+                ipAddressType = g['addressType']
             results = OrderedDict(
                 sorted(
                     iteritems(
@@ -162,9 +170,10 @@ def create_dynamic_ec2_inventory(definition, region=None):
                             asg.get_asg_ec2_instance_ids(g['name'], region))),
                     key=lambda x: x[1]['Name']))
             if len(results) > 0:
-                instances = [
-                    v['PrivateIpAddress'] for k, v in iteritems(results)
-                ]
+                instances = []
+                for k, v in iteritems(results):
+                    if v[ipAddressType] is not None:
+                        instances.append(v[ipAddressType])
                 groups.append(
                     create_inventory_group(
                         g['inventory']['name'],

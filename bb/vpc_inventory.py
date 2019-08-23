@@ -71,12 +71,15 @@ def main():
         sorted(
             iteritems(ec2.get_ec2_instances_in_vpc(vpc_id)),
             key=lambda x: x[1]['Name']))
+    vpcInstances = []
+    for k, v in iteritems(instances):
+        if v['PrivateIpAddress'] is not None:
+            vpcInstances.append(v['PrivateIpAddress'])
     vpc = inv_util.create_inventory([
         inv_util.create_inventory_group(
             'vpc_inventory',
-            [v['PrivateIpAddress'] for k, v in iteritems(instances)]
-        )]
-    )
+            vpcInstances
+        )])
 
     if args.list:
         print(json.dumps(vpc, indent=2))

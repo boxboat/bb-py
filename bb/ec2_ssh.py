@@ -66,7 +66,7 @@ def main():
 
     selections = []
     for k, v in iteritems(instances):
-        if args.public and v.get('PublicIpAddress'):
+        if args.public and v.get('PublicIpAddress') is not None:
             selections.append(
                 ('{name:{fill}<{n}}{0}'.format(
                     v['PublicIpAddress'],
@@ -74,12 +74,13 @@ def main():
                     fill=' ',
                     n=30), v['PublicIpAddress']))
         else:
-            selections.append(
-                ('{name:{fill}<{n}}{0}'.format(
-                    v['PrivateIpAddress'],
-                    name=v['Name'] + ':',
-                    fill=' ',
-                    n=30), v['PrivateIpAddress']))
+            if v.get('PrivateIpAddress') is not None:
+                selections.append(
+                    ('{name:{fill}<{n}}{0}'.format(
+                        v['PrivateIpAddress'],
+                        name=v['Name'] + ':',
+                        fill=' ',
+                        n=30), v['PrivateIpAddress']))
 
     log.debug('Selections: %s', sorted(selections))
     selections.append(('Exit', 'exit'))
