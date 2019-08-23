@@ -3,6 +3,7 @@ python:
 - '3.6'
 script:
 - make
+- pipenv sync --dev
 - ./scripts/ci/unit-test.sh
 - ./scripts/ci/functional-test.sh
 env:
