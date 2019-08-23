@@ -1,4 +1,5 @@
 # BoxBoat Python Library
+[![Build Status](https://travis-ci.org/boxboat/bb-py.svg?branch=master)](https://travis-ci.org/boxboat/bb-py)
 
 `bb-py` is a collection of cloud utilities to simplify deployment in the cloud.
 
@@ -183,7 +184,6 @@
             - ucp_username: boxboat
             - ucp_password: somepass"
     ansible-playbook -i `which bb-ec2-inventory` playbook.yml
-  "
   ```
 
 
