@@ -21,7 +21,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='bb-py',  # Required
-    version='1.1.1',  # Required
+    version='1.1.2',  # Required
     description='Collection of BoxBoat Python cloud utilities',  # Required
     long_description=long_description,
     url='https://gitlab.com/boxboat/bb-py',  # Optional
@@ -48,12 +48,9 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        # 'Programming Language :: Python :: 3.4',
-        # 'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 
     keywords='devops aws cloud ansible',  # Optional
@@ -66,7 +63,7 @@ setup(
         'inquirer >=2.3.0,<3.0.0',
         'requests >= 2.5.0,<3.0.0',
         'requests-toolbelt >= 0.8.0,<1.0.0',
-        'PyYAML >= 5.0.0,<6.0.0',
+        'PyYAML >= 5.0.0,<=5.1.0',
         'six >=1.0.0,<2.0.0'
     ],
 
