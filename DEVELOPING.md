@@ -3,7 +3,7 @@
 ## Developing
 
 #### Prerequisites
-* python3.6
+* python3.7
 * virtualenv
 * [pipenv](https://docs.pipenv.org/)
 

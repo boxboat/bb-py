@@ -9,6 +9,7 @@ import logging
 import requests
 import json
 import boto3
+import os
 
 import bb.aws
 
@@ -32,7 +33,8 @@ def __init_region():
         try:
             __set_region(get_instance_region())
         except Exception as e:
-            log.warn('Could not retrieve instance region')
+            log.warn('Could not determine region automatically, set --region')
+            exit(1)
 
 
 def __get_default_region():
